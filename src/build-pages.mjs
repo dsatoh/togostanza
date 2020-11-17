@@ -64,7 +64,16 @@ export default class BuildPages extends BroccoliPlugin {
         commonjs(),
         vue(),
         json(),
-        handlebars(),
+
+        handlebars({
+          handlebars: {
+            id: resolvePackage('handlebars/runtime')
+          },
+
+          helpers: [
+            path.join(packagePath, 'src', 'handlebars-helpers.js')
+          ]
+        }),
 
         styles({
           sass: {

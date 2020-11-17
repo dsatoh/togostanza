@@ -1,7 +1,7 @@
 {{#if params}}
 <{{tagName}}
   {{#each params as |param|}}
-  {{param.name}}="{{param.value}}"
+  {{param.name}}{{#unless (eq param.name param.value)}}="{{param.value}}"{{/unless}}
   {{/each}}
 ></{{tagName}}>
 {{else}}
