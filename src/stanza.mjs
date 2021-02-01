@@ -10,6 +10,9 @@ export default class Stanza {
 
     const handlebarsRuntime = HandlebarsRuntime.create();
 
+    handlebarsRuntime.registerHelper('repository-asset-url', this.repositoryAssetUrl.bind(this));
+    handlebarsRuntime.registerHelper('asset-url', this.assetUrl.bind(this));
+
     this.templates = Object.fromEntries(templates.map(([name, spec]) => {
       return [name, handlebarsRuntime.template(spec)];
     }));
@@ -88,5 +91,13 @@ export default class Stanza {
 
     document.head.appendChild(el);
     this.root.appendChild(el.cloneNode());
+  }
+
+  repositoryAssetUrl(path) {
+    return new URL(`assets/${path}`, this.url);
+  }
+
+  assetUrl(path) {
+    return this.url.replace(/\.js$/, '') + `/assets/${path}`;
   }
 }

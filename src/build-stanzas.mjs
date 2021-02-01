@@ -40,6 +40,9 @@ export default class BuildStanzas extends BroccoliPlugin {
     const buildConfig         = await readBuildConfig(this.repositoryDir, this.environment);
     const customRollupPlugins = buildConfig?.rollup?.plugins || [];
 
+    const packageJson = await fs.readJson(path.join(this.repositoryDir, "package.json"));
+    const deployRoot = packageJson.togostanza?.deployRoot;
+
     const bundle = await rollup({
       input: stanzas.map(({id}) => `${id}.js`),
 
@@ -47,7 +50,7 @@ export default class BuildStanzas extends BroccoliPlugin {
         virtual(
           Object.fromEntries(
             await Promise.all(
-              stanzas.map(stanza => virtualModules(stanza, this.repositoryDir))
+              stanzas.map(stanza => virtualModules(stanza, this.repositoryDir, deployRoot, this.environment))
             ).then(ary => ary.flat(1))
           )
         ),
@@ -137,7 +140,7 @@ export default class BuildStanzas extends BroccoliPlugin {
 
 const entrypointTemplate = handlebarsTemplate('entrypoint.js.hbs', {noEscape: true});
 
-async function virtualModules(stanza, repositoryDir) {
+async function virtualModules(stanza, repositoryDir, deployRoot, environment) {
   const entrypoint = entrypointTemplate({
     stanzaId: stanza.id,
   });
@@ -164,7 +167,22 @@ async function virtualModules(stanza, repositoryDir) {
 
       includePaths: [
         path.join(repositoryDir, 'node_modules')
-      ]
+      ],
+
+      functions: {
+        'asset-url($path)': (path) => {
+          // TODO ensure path is string
+          const p = "assets/" + path.getValue();
+
+          // TODO avoid dup of /
+          const url = (environment === "production") ? `${deployRoot}/${p}` : p;
+          return new sass.types.String(`url(${url})`);
+          // TODO passtrhough on development mode
+
+          // TODO escape url?
+        }
+        // TODO repository-asset-url()
+      }
     })).css.toString();
   } catch (e) {
     css = null;
