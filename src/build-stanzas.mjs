@@ -171,7 +171,9 @@ async function virtualModules(stanza, repositoryDir, deployRoot, environment) {
 
       functions: {
         'asset-url($path)': (path) => {
-          // TODO ensure path is string
+          if (!(path instanceof sass.types.String)) {
+            throw "$path: Expected a string.";
+          }
           const p = "assets/" + path.getValue();
 
           // TODO avoid dup of /
