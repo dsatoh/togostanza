@@ -170,7 +170,7 @@ async function virtualModules(stanza, repositoryDir, deployRoot, environment) {
       ],
 
       functions: {
-        'asset-url($path)': (path) => {
+        'repository-asset-url($path)': (path) => {
           if (!(path instanceof sass.types.String)) {
             throw "$path: Expected a string.";
           }
@@ -178,12 +178,10 @@ async function virtualModules(stanza, repositoryDir, deployRoot, environment) {
 
           // TODO avoid dup of /
           const url = (environment === "production") ? `${deployRoot}/${p}` : p;
-          return new sass.types.String(`url(${url})`);
-          // TODO passtrhough on development mode
-
           // TODO escape url?
+          return new sass.types.String(`url(${url})`);
         }
-        // TODO repository-asset-url()
+        // TODO asset-url()
       }
     })).css.toString();
   } catch (e) {
