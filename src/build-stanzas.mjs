@@ -178,8 +178,9 @@ async function virtualModules(stanza, repositoryDir, deployRoot, environment) {
 
           // TODO avoid dup of /
           const url = (environment === "production") ? `${deployRoot}/${p}` : p;
-          // TODO escape url?
-          return new sass.types.String(`url(${url})`);
+          const urlEscaped = url.replaceAll(`'`, `\'`); // https://developer.mozilla.org/en-US/docs/Web/CSS/url()#values
+
+          return new sass.types.String(`url('${urlEscaped}')`);
         }
         // TODO asset-url()
       }
