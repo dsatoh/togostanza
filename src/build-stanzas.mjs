@@ -49,6 +49,10 @@ export default class BuildStanzas extends BroccoliPlugin {
           continue;
         }
 
+        if (fs.existsSync(destPath) && fs.statSync(sourcePath).mtime < fs.statSync(destPath).mtime) {
+          continue;
+        }
+
         const {repositoryDir} = this;
 
         const css = sass.renderSync({

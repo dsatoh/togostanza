@@ -27,7 +27,7 @@ async function serve(port) {
   ensureTogoStanzaIsLocallyInstalled(repositoryDir);
 
   const ui   = new UI();
-  const tree = composeTree(repositoryDir, {environment: 'development'});
+  const tree = composeTree(repositoryDir, {environment: 'development', persistentOutput: true});
 
   const server = new MergeTrees([
     tree,
